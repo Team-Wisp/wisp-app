@@ -23,7 +23,7 @@ export async function enrichDomain(domain: string, domainType: OrganizationType)
     name,
     domain,
     type: domainType,
-    org_slug: slug,
+    slug,
   });
 }
 

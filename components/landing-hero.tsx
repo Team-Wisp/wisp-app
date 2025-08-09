@@ -37,8 +37,8 @@ export default function LandingHero() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: e.data.data.token }),
       });
-
-      setOpen(false);
+        setOpen(false);
+      toast.success("Login successful", { description: "Welcome back to TeamWisp!" });
       // route user to the app (or refresh)
       window.location.href = "/app";
     }
