@@ -1,13 +1,13 @@
 "use client";
 
-import { use, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { toast } from "sonner";
 
 type Mode = "signup" | "signin";
@@ -79,6 +79,11 @@ export default function LandingHero() {
       {/* Auth dialog with iframe */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="p-0 overflow-hidden sm:max-w-[460px]">
+          <VisuallyHidden>
+            <DialogTitle>
+              {mode === "signup" ? "Create your account" : "Sign in to your account"}
+            </DialogTitle>
+          </VisuallyHidden>
           <iframe
             title={mode === "signup" ? "TeamWisp Sign up" : "TeamWisp Sign in"}
             src={iframeSrc}
