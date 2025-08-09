@@ -24,16 +24,24 @@ export default function LandingHero() {
 
   // Close dialog on success messages from iframe (and only from trusted origin)
   useEffect(() => {
-    function onMessage(e: MessageEvent) {
+    async function onMessage(e: MessageEvent) {
       if (!oasisOrigin || e.origin !== oasisOrigin) return;
       if (e.data?.event === "OASIS_SIGNUP_SUCCESS") {
         setOpen(false);
         toast.success("Signup successful", { description: "Welcome to TeamWisp!" });
       }
-      if (e.data?.event === "OASIS_LOGIN_SUCCESS") {
-        setOpen(false);
-        toast.success("Welcome back!", { description: "You are now logged in." });
-      }
+      if (e.data?.event === "OASIS_LOGIN_SUCCESS" && e.data?.data?.token) {
+      // hand the token to a server route to set an HttpOnly cookie
+      await fetch("/api/session/consume", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: e.data.data.token }),
+      });
+
+      setOpen(false);
+      // route user to the app (or refresh)
+      window.location.href = "/app";
+    }
       if (e.data?.event === "OASIS_USER_EXISTS") {
         toast.info("Account already exists", { description: "Please sign in instead." });
       }
