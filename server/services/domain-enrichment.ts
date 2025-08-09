@@ -1,5 +1,5 @@
 import { dbConnect } from "@/server/db";
-import { Organization } from "@/server/models/Organization";
+import Organization from "@/server/models/Organization";
 import { OrganizationType } from "@/server/models/OrganizationType";
 import { makeSlug } from "@/server/utils/slug";
 import OpenAI from "openai";

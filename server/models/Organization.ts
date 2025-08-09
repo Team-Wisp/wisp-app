@@ -1,17 +1,12 @@
-import mongoose, { Schema, InferSchemaType, Model } from "mongoose";
-import { OrganizationType } from "./OrganizationType";
+import mongoose, { Schema, InferSchemaType } from "mongoose";
 
-const OrganizationSchema = new Schema(
-  {
-    name: { type: String, required: true },
-    domain: { type: String, required: true, unique: true, index: true },
-    type: { type: String, enum: Object.values(OrganizationType), required: true },
-    org_slug: { type: String, required: true, unique: true, index: true },
-  },
-  { timestamps: true }
-);
+const OrganizationSchema = new Schema({
+  slug:      { type: String, unique: true, index: true, required: true },
+  name:      { type: String, required: true },
+  domain:    { type: String, unique: true, index: true, required: true },
+  type:      { type: String, enum: ["corporate","college"], index: true, required: true },
+  logoUrl:   { type: String },
+}, { timestamps: true });
 
-type OrganizationDoc = InferSchemaType<typeof OrganizationSchema>;
-
-export const Organization: Model<OrganizationDoc> =
-  mongoose.models.Organization || mongoose.model<OrganizationDoc>("Organization", OrganizationSchema);
+export type Organization = InferSchemaType<typeof OrganizationSchema>;
+export default mongoose.models.Organization || mongoose.model("Organization", OrganizationSchema);
