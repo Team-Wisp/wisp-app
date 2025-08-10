@@ -3,7 +3,7 @@ import mongoose, { Schema, InferSchemaType, Types } from "mongoose";
 const MembershipSchema = new Schema({
   userId:        { type: Schema.Types.ObjectId, ref: "User", index: true, required: true },
   orgId:         { type: Schema.Types.ObjectId, ref: "Organization", index: true, required: true },
-  displayHandle: { type: String, required: true }, // e.g., calm-otter-19
+  displayHandle: { type: String, required: true }, 
   role:          { type: String, enum: ["member","mod","admin"], default: "member" },
 }, { timestamps: true });
 
