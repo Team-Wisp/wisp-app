@@ -3,7 +3,8 @@ import {dbConnect} from "@/server/db";
 import Post from "@/server/models/Posts";
 import { NextResponse } from "next/server";
 
-export async function GET(_: Request, { params }: { params: { id: string } }) {
+export async function GET(_: Request, context: { params: Promise<{ id: string }> }) {
+  const params = await context.params;
   await dbConnect();
   const post = await Post.findById(params.id)
     .select("_id orgId category title body authorHandleSnapshot likeCount commentCount viewCount createdAt isDeleted")
@@ -12,7 +13,8 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
   return NextResponse.json(post);
 }
 
-export async function DELETE(_: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_: Request, context: { params: Promise<{ id: string }> }) {
+  const params = await context.params;
   await dbConnect();
   const ctx = await getCurrentContext(); // no org check needed here
 

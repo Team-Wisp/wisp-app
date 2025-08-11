@@ -1,21 +1,18 @@
 import mongoose, { Schema, InferSchemaType, Types } from "mongoose";
 
-const ReviewSchema = new Schema({
-  orgId:              { type: Schema.Types.ObjectId, ref: "Organization", index: true, required: true },
-  authorMembershipId: { type: Schema.Types.ObjectId, ref: "Membership", index: true, required: true },
-  overall:            { type: Number, min: 1, max: 5, required: true },
-  workLife:           { type: Number, min: 1, max: 5, required: true },
-  compensation:       { type: Number, min: 1, max: 5, required: true },
-  culture:            { type: Number, min: 1, max: 5, required: true },
-  leadership:         { type: Number, min: 1, max: 5, required: true },
-  title:              { type: String },
-  pros:               { type: String, required: true },
-  cons:               { type: String, required: true },
-  isDeleted:          { type: Boolean, default: false, index: true },
-}, { timestamps: true });
+const ReviewSchema = new Schema(
+  {
+    companyId: { type: Schema.Types.ObjectId, ref: "Organization", required: true },  // Reference to the company
+    authorMembershipId: { type: Schema.Types.ObjectId, ref: "Membership", required: true }, // Reference to the membership who wrote the review
+    rating: { type: Number, required: true, min: 1, max: 5 },  // Rating (1 to 5)
+    comment: { type: String, required: true, maxlength: 1000 },  // Comment about the company
+    isDeleted: { type: Boolean, default: false, index: true },  // Soft delete flag
+  },
+  { timestamps: true }
+);
 
-// Optional: one review per membership per org
-// ReviewSchema.index({ orgId: 1, authorMembershipId: 1 }, { unique: true });
+// Create an index to quickly filter reviews for a specific company
+ReviewSchema.index({ companyId: 1, createdAt: -1 });  // Sort reviews by most recent first
 
 export type Review = InferSchemaType<typeof ReviewSchema> & { _id: Types.ObjectId };
 export default mongoose.models.Review || mongoose.model("Review", ReviewSchema);

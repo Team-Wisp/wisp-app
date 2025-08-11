@@ -5,7 +5,8 @@ import Reaction from "@/server/models/Reactions";
 import Membership from "@/server/models/Membership";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(_: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(_: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const params = await context.params;
   await dbConnect();
   const ctx = await getCurrentContext(); // membership-only token
   if (!ctx) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -32,7 +33,8 @@ export async function POST(_: NextRequest, { params }: { params: { id: string } 
   return NextResponse.json({ ok: true });
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const params = await context.params;
   await dbConnect();
   const ctx = await getCurrentContext();
   if (!ctx) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
