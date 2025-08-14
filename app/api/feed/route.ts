@@ -1,4 +1,5 @@
 import {dbConnect} from "@/server/db";
+import Organization from "@/server/models/Organization";
 import Post from "@/server/models/Posts";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -40,9 +41,16 @@ export async function GET(req: NextRequest) {
     .lean();
 
   const hasMore = docs.length > limit;
-  const data = hasMore ? docs.slice(0, limit) : docs;
+  const slice = hasMore ? docs.slice(0, limit) : docs;
+
+  // attach org snapshot
+  const orgIds = Array.from(new Set(slice.map(d => String(d.orgId))));
+  const orgs = await Organization.find({ _id: { $in: orgIds } }).select("_id name slug").lean();
+  const map = new Map(orgs.map(o => [String(o._id), { name: o.name, slug: o.slug }]));
+  const data = slice.map(d => ({ ...d, org: map.get(String(d.orgId)) || null }));
+
   const nextCursor = hasMore
-    ? encodeCursor(data[data.length - 1].createdAt, String(data[data.length - 1]._id))
+    ? Buffer.from(JSON.stringify({ t: slice[slice.length-1].createdAt.toISOString(), id: String(slice[slice.length-1]._id) }), "utf8").toString("base64url")
     : null;
 
   return NextResponse.json({ data, nextCursor });
